@@ -1,10 +1,4 @@
-# robust inverse dynamics control
+# Collection of controllers based standard ROS control
 
-required [rosdyn](https://github.com/CNR-STIIMA-IRAS/rosdyn)
-
-required parameters:
-``` yaml
-natural_frequency: 20   # natural frequency of the closed loop
-damping: 1              # relative damping of the closed loop  
-robustness_gain: 0.01   # robustness gain
-```
+## Robust Inverse Dynamics Controller
+See [here](robust_inverse_dynamics_controller/README.md)
