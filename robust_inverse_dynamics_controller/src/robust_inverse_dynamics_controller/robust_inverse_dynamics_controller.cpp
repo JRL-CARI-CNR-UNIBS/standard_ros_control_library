@@ -66,6 +66,18 @@ bool RobustInverseDynamicsControl::init(hardware_interface::EffortJointInterface
     ROS_FATAL("ERROR DURING INITIALIZATION CONTROLLER '%s'", m_controller_nh.getNamespace().c_str());
     return false;
   }
+  if(setpoint_topic_name.front()=='~')
+  {
+    setpoint_topic_name = m_controller_nh.getNamespace() +"/" + setpoint_topic_name.erase(0,1);
+  }
+  else if(setpoint_topic_name.front()=='~')
+  {
+    // do not nothing!
+  }
+  else
+  {
+    setpoint_topic_name = m_root_nh.getNamespace() +"/" + setpoint_topic_name;
+  }
   m_target_js_rec.reset(new ros_helper::SubscriptionNotifier<sensor_msgs::JointState>(m_controller_nh,setpoint_topic_name, 1,boost::bind(&RobustInverseDynamicsControl::setTargetCallback,this,_1)));
 
   ROS_DEBUG("Controller '%s' controls the following joint:",m_controller_nh.getNamespace().c_str());
