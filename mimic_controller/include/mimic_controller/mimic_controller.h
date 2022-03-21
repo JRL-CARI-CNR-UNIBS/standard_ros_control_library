@@ -38,7 +38,8 @@ protected:
   std::vector<double> m_kp;
   std::vector<double> m_kv;
   std::vector<double> m_ki;
-  std::vector<double> m_xi;
+  std::vector<double> m_xi; // integral state
+  std::vector<double> m_max_effort;
 
   std::vector<hardware_interface::JointHandle> m_joint_handles;
   hardware_interface::JointHandle m_leading_joint_handle;

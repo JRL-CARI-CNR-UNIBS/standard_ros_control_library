@@ -92,6 +92,21 @@ bool MimicController::init(hardware_interface::EffortJointInterface* hw, ros::No
       return false;
     }
   }
+
+  if (!m_controller_nh.getParam("max_effort",m_max_effort))
+  {
+    ROS_ERROR("%s/max_effort not defined",m_controller_nh.getNamespace().c_str());
+    return false;
+  }
+  else
+  {
+    if (m_max_effort.size() != m_nax)
+    {
+      ROS_ERROR("%s/max_effort has wrong dimension (%zu instead of %zu)",m_controller_nh.getNamespace().c_str(),m_max_effort.size(),m_nax);
+      return false;
+    }
+  }
+
   m_xi.resize(m_nax,0.0);
 
   if (!m_controller_nh.getParam("leading_joint",m_leading_joint))
@@ -182,8 +197,15 @@ void MimicController::update(const ros::Time& /*time*/, const ros::Duration& per
 
     double pos_error=target_pos-position;
     double vel_error=target_vel-velocity;
-    m_xi.at(iax)+=m_ki.at(iax)+period.toSec()*pos_error;
-    double effort=m_xi.at(iax)+m_kp.at(iax)*pos_error+m_kv.at(iax)*vel_error;
+
+    double xi=m_xi.at(iax)+m_ki.at(iax)*period.toSec()*pos_error;
+    double effort=xi+m_kp.at(iax)*pos_error+m_kv.at(iax)*vel_error;
+    if (effort>m_max_effort.at(iax))
+      effort=m_max_effort.at(iax);
+    else if (effort<-m_max_effort.at(iax))
+      effort=-m_max_effort.at(iax);
+    else
+      m_xi.at(iax)=xi;
 
     m_joint_handles.at(iax).setCommand(effort);
   }
@@ -207,11 +229,9 @@ void MimicController::setTargetCallback(const sensor_msgs::JointStateConstPtr& m
       ROS_INFO("First target message received");
 
     m_configured=true;
-    for (unsigned int iAx=0;iAx<m_nax;iAx++)
-    {
-      m_target_position = tmp_msg.position.at(iAx);
-      m_target_velocity = tmp_msg.velocity.at(iAx);
-    }
+    m_target_position = tmp_msg.position.at(0);
+    m_target_velocity = tmp_msg.velocity.at(0);
+
   }
   catch(...)
   {
