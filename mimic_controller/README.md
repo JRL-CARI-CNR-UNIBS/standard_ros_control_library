@@ -38,7 +38,7 @@ mimic_effort_controller:
   leading_joint: "jnt1"  # leading joint
 
   # target effort of a generic joint:  offset+multiplier*effort of leading joint
-  # target velocity of a generic joint:  multiplier*velocity of leading joint
+
   multiplier: [1.0, -1.0, 1.0] #  (default 1.0)
   offset: [0.0, 0.0, 0.0] # (default null)
 
