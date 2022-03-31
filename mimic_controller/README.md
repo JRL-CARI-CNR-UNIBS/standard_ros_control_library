@@ -25,3 +25,23 @@ mimic_controller:
   setpoint_topic_name: "/manipulator/joint_target"
 
 ```
+
+
+``` yaml
+mimic_effort_controller:
+  type: robot_control/MimicEffortController
+  joint_names: # controlled joints
+  - jnt1
+  - jnt2
+  - jnt3
+
+  leading_joint: "jnt1"  # leading joint
+
+  # target effort of a generic joint:  offset+multiplier*effort of leading joint
+  # target velocity of a generic joint:  multiplier*velocity of leading joint
+  multiplier: [1.0, -1.0, 1.0] #  (default 1.0)
+  offset: [0.0, 0.0, 0.0] # (default null)
+
+  setpoint_topic_name: "/manipulator/joint_target"
+
+```

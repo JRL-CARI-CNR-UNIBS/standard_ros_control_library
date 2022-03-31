@@ -4,4 +4,10 @@
 			mimic dynamics controller for standard ROS control
 		</description>
 	</class>
+  <class name="robot_control/MimicEffortController" type="robot_control::MimicEffortController" base_class_type="controller_interface::ControllerBase">
+		<description>
+			mimic dynamics controller for standard ROS control
+		</description>
+	</class>
+
 </library>
