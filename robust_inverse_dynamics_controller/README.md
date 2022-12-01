@@ -12,5 +12,6 @@ robust_inverse_dynamics:
   natural_frequency: 20   # natural frequency of the closed loop
   damping: 1              # relative damping of the closed loop
   robustness_gain: 0.01   # robustness gain
+  integral_gain: 0.01     # integral gain (it should be small)
 
 ```

@@ -1,7 +1,7 @@
 #include <robust_inverse_dynamics_controller/robust_inverse_dynamics_controller.h>
 #include <pluginlib/class_list_macros.h>
 
-PLUGINLIB_EXPORT_CLASS(robot_control::RobustInverseDynamicsControl, controller_interface::ControllerBase);
+PLUGINLIB_EXPORT_CLASS(robot_control::RobustInverseDynamicsControl, controller_interface::ControllerBase)
 
 
 namespace robot_control
@@ -25,10 +25,17 @@ bool RobustInverseDynamicsControl::init(hardware_interface::EffortJointInterface
     ROS_ERROR("tool_link not defined");
     return false;
   }
-  urdf::Model urdf_model;
-  if (!urdf_model.initParam("/robot_description"))
+
+  std::string robot_description;
+  if (!m_controller_nh.getParam("/robot_description",robot_description))
   {
-    ROS_ERROR("Urdf robot_description '%s' does not exist",(m_controller_nh.getNamespace()+"/robot_description").c_str());
+    ROS_ERROR("/robot_description not defined");
+    return false;
+  }
+  urdf::Model urdf_model;
+  if (!urdf_model.initString(robot_description))
+  {
+    ROS_ERROR("'%s' unable to obtain urdf_model from robot description",(m_controller_nh.getNamespace()).c_str());
     return false;
   }
   Eigen::Vector3d gravity;
@@ -116,7 +123,7 @@ void RobustInverseDynamicsControl::stopping(const ros::Time& /*time*/)
   m_configured = false;
 }
 
-void RobustInverseDynamicsControl::update(const ros::Time& /*time*/, const ros::Duration& /*period*/)
+void RobustInverseDynamicsControl::update(const ros::Time& /*time*/, const ros::Duration& period)
 {
 
   m_queue.callAvailable();
@@ -131,6 +138,7 @@ void RobustInverseDynamicsControl::update(const ros::Time& /*time*/, const ros::
                 m_velocity,
                 m_target_position,
                 m_target_velocity,
+                period.toSec(),
                 m_target_effort);
 
   for (unsigned int iax=0;iax<m_nax;iax++)
